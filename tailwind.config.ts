@@ -18,6 +18,9 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				'inter': ['Inter', 'sans-serif'],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -61,6 +64,14 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				timer: {
+					success: 'hsl(var(--timer-success))',
+					warning: 'hsl(var(--timer-warning))',
+					purple: 'hsl(var(--timer-purple))',
+					teal: 'hsl(var(--timer-teal))',
+					orange: 'hsl(var(--timer-orange))',
+					blue: 'hsl(var(--timer-blue))'
 				}
 			},
 			borderRadius: {
