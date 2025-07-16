@@ -2,14 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { TimezoneSelector } from './TimezoneSelector';
 import { StartTimerSection } from './StartTimerSection';
 import { PresetTimerGrid } from './PresetTimerGrid';
+import { CountdownTimer } from './CountdownTimer';
 import { ThemeToggle } from './ThemeToggle';
 import { format } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
+
+interface TimerData {
+  minutes: number;
+  mode: string;
+  label: string;
+}
 
 export const TimerDashboard: React.FC = () => {
   const [selectedTimezone, setSelectedTimezone] = useState('America/New_York');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const [activeTimer, setActiveTimer] = useState<TimerData | null>(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -24,6 +32,26 @@ export const TimerDashboard: React.FC = () => {
 
   const formattedTime = formatInTimeZone(currentTime, selectedTimezone, 'h:mm:ss a');
   const formattedDate = formatInTimeZone(currentTime, selectedTimezone, 'EEEE, MMMM d, yyyy');
+
+  const handleStartTimer = (timerData: TimerData) => {
+    setActiveTimer(timerData);
+  };
+
+  const handleBackToDashboard = () => {
+    setActiveTimer(null);
+  };
+
+  if (activeTimer) {
+    return (
+      <CountdownTimer
+        initialMinutes={activeTimer.minutes}
+        mode={activeTimer.mode}
+        label={activeTimer.label}
+        timezone={selectedTimezone}
+        onBack={handleBackToDashboard}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 relative overflow-hidden">
@@ -57,8 +85,11 @@ export const TimerDashboard: React.FC = () => {
 
         {/* Start Timer Section */}
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <StartTimerSection timezone={selectedTimezone} />
-          <PresetTimerGrid />
+          <StartTimerSection 
+            timezone={selectedTimezone} 
+            onStartTimer={handleStartTimer}
+          />
+          <PresetTimerGrid onStartTimer={handleStartTimer} />
         </section>
       </main>
     </div>

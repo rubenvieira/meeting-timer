@@ -4,10 +4,16 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Play, Coffee, Dumbbell, TestTube, Users, Clock } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+
+interface TimerData {
+  minutes: number;
+  mode: string;
+  label: string;
+}
 
 interface StartTimerSectionProps {
   timezone: string;
+  onStartTimer: (timerData: TimerData) => void;
 }
 
 const timerModes = [
@@ -17,11 +23,10 @@ const timerModes = [
   { value: 'meeting', label: 'Meeting', icon: Users, color: 'timer-purple' },
 ];
 
-export const StartTimerSection: React.FC<StartTimerSectionProps> = ({ timezone }) => {
+export const StartTimerSection: React.FC<StartTimerSectionProps> = ({ timezone, onStartTimer }) => {
   const [time, setTime] = useState('12:00');
   const [ampm, setAmpm] = useState('PM');
   const [selectedMode, setSelectedMode] = useState('coffee');
-  const { toast } = useToast();
 
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTime(e.target.value);
@@ -42,9 +47,32 @@ export const StartTimerSection: React.FC<StartTimerSectionProps> = ({ timezone }
 
   const handleStartTimer = () => {
     const selectedModeData = timerModes.find(mode => mode.value === selectedMode);
-    toast({
-      title: `Timer Started`,
-      description: `${selectedModeData?.label} timer set for ${time} ${ampm}`,
+    const [hours, minutes] = time.split(':').map(Number);
+    
+    // Calculate timer duration based on current time vs selected time
+    const now = new Date();
+    const targetTime = new Date();
+    let targetHours = hours;
+    if (ampm === 'PM' && hours !== 12) targetHours += 12;
+    if (ampm === 'AM' && hours === 12) targetHours = 0;
+    
+    targetTime.setHours(targetHours, minutes, 0, 0);
+    
+    // If target time is in the past, assume it's for tomorrow
+    if (targetTime < now) {
+      targetTime.setDate(targetTime.getDate() + 1);
+    }
+    
+    const durationMinutes = Math.round((targetTime.getTime() - now.getTime()) / (1000 * 60));
+    
+    if (durationMinutes <= 0) {
+      return;
+    }
+    
+    onStartTimer({
+      minutes: durationMinutes,
+      mode: selectedMode,
+      label: `${selectedModeData?.label} (${time} ${ampm})`,
     });
   };
 

@@ -1,7 +1,16 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Coffee, Apple, TestTube, Users, Clock, Timer } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+
+interface TimerData {
+  minutes: number;
+  mode: string;
+  label: string;
+}
+
+interface PresetTimerGridProps {
+  onStartTimer: (timerData: TimerData) => void;
+}
 
 interface PresetTimer {
   id: string;
@@ -36,13 +45,21 @@ const presetTimers: PresetTimer[] = [
   { id: 'pomodoro-break', label: '5 min', minutes: 5, icon: Clock, color: 'timer-warning', category: 'Break' },
 ];
 
-export const PresetTimerGrid: React.FC = () => {
-  const { toast } = useToast();
-
+export const PresetTimerGrid: React.FC<PresetTimerGridProps> = ({ onStartTimer }) => {
   const handlePresetClick = (preset: PresetTimer) => {
-    toast({
-      title: `Timer Started`,
-      description: `${preset.category} timer set for ${preset.minutes} minutes`,
+    const modeMap: { [key: string]: string } = {
+      'Coffee': 'coffee',
+      'Exercise': 'workout',
+      'Lab': 'lab',
+      'Meeting': 'meeting',
+      'Focus': 'focus',
+      'Break': 'break',
+    };
+    
+    onStartTimer({
+      minutes: preset.minutes,
+      mode: modeMap[preset.category] || 'focus',
+      label: `${preset.category} (${preset.label})`,
     });
   };
 
