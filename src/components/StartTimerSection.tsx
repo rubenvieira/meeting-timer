@@ -17,16 +17,23 @@ interface StartTimerSectionProps {
 }
 
 const timerModes = [
-  { value: 'coffee', label: 'Coffee Break', icon: Coffee, color: 'timer-orange' },
-  { value: 'workout', label: 'Workout', icon: Dumbbell, color: 'timer-success' },
-  { value: 'lab', label: 'Lab Work', icon: TestTube, color: 'timer-blue' },
-  { value: 'meeting', label: 'Meeting', icon: Users, color: 'timer-purple' },
+  { value: 'break', label: 'Break Time', icon: Coffee, color: 'timer-orange' },
+  { value: 'session', label: 'Session', icon: Users, color: 'timer-purple' },
+  { value: 'training', label: 'Training', icon: TestTube, color: 'timer-blue' },
+  { value: 'meeting', label: 'Meeting', icon: Clock, color: 'timer-success' },
 ];
 
 export const StartTimerSection: React.FC<StartTimerSectionProps> = ({ timezone, onStartTimer }) => {
-  const [time, setTime] = useState('12:00');
-  const [ampm, setAmpm] = useState('PM');
-  const [selectedMode, setSelectedMode] = useState('coffee');
+  // Initialize with current time
+  const now = new Date();
+  const currentHours = now.getHours();
+  const currentMinutes = now.getMinutes();
+  const displayHours = currentHours > 12 ? currentHours - 12 : currentHours === 0 ? 12 : currentHours;
+  const currentAmPm = currentHours >= 12 ? 'PM' : 'AM';
+  
+  const [time, setTime] = useState(`${displayHours.toString().padStart(2, '0')}:${currentMinutes.toString().padStart(2, '0')}`);
+  const [ampm, setAmpm] = useState(currentAmPm);
+  const [selectedMode, setSelectedMode] = useState('break');
 
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTime(e.target.value);

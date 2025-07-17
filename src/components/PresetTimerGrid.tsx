@@ -22,38 +22,28 @@ interface PresetTimer {
 }
 
 const presetTimers: PresetTimer[] = [
-  // Coffee Break
-  { id: 'coffee-5', label: '5 min', minutes: 5, icon: Coffee, color: 'timer-orange', category: 'Coffee' },
-  { id: 'coffee-10', label: '10 min', minutes: 10, icon: Coffee, color: 'timer-orange', category: 'Coffee' },
-  { id: 'coffee-15', label: '15 min', minutes: 15, icon: Coffee, color: 'timer-orange', category: 'Coffee' },
+  // Break Times
+  { id: 'break-5', label: '5 min', minutes: 5, icon: Coffee, color: 'timer-orange', category: 'Break' },
+  { id: 'break-10', label: '10 min', minutes: 10, icon: Coffee, color: 'timer-orange', category: 'Break' },
+  { id: 'break-15', label: '15 min', minutes: 15, icon: Coffee, color: 'timer-orange', category: 'Break' },
   
-  // Exercise
-  { id: 'exercise-45', label: '45 min', minutes: 45, icon: Apple, color: 'timer-success', category: 'Exercise' },
-  { id: 'exercise-60', label: '60 min', minutes: 60, icon: Apple, color: 'timer-success', category: 'Exercise' },
+  // Lunch/Extended Breaks
+  { id: 'lunch-30', label: '30 min', minutes: 30, icon: Clock, color: 'timer-success', category: 'Lunch' },
+  { id: 'lunch-60', label: '60 min', minutes: 60, icon: Clock, color: 'timer-success', category: 'Lunch' },
   
-  // Lab Work
-  { id: 'lab-30', label: '30 min', minutes: 30, icon: TestTube, color: 'timer-blue', category: 'Lab' },
-  { id: 'lab-45', label: '45 min', minutes: 45, icon: TestTube, color: 'timer-blue', category: 'Lab' },
-  { id: 'lab-60', label: '60 min', minutes: 60, icon: TestTube, color: 'timer-blue', category: 'Lab' },
-  
-  // Meeting
-  { id: 'meeting-30', label: '30 min', minutes: 30, icon: Users, color: 'timer-purple', category: 'Meeting' },
-  { id: 'meeting-60', label: '60 min', minutes: 60, icon: Users, color: 'timer-purple', category: 'Meeting' },
-  
-  // Pomodoro
-  { id: 'pomodoro-25', label: '25 min', minutes: 25, icon: Timer, color: 'timer-teal', category: 'Focus' },
-  { id: 'pomodoro-break', label: '5 min', minutes: 5, icon: Clock, color: 'timer-warning', category: 'Break' },
+  // Sessions/Training
+  { id: 'session-90', label: '90 min', minutes: 90, icon: Users, color: 'timer-purple', category: 'Session' },
+  { id: 'session-120', label: '2 hours', minutes: 120, icon: Users, color: 'timer-purple', category: 'Session' },
+  { id: 'training-180', label: '3 hours', minutes: 180, icon: TestTube, color: 'timer-blue', category: 'Training' },
 ];
 
 export const PresetTimerGrid: React.FC<PresetTimerGridProps> = ({ onStartTimer }) => {
   const handlePresetClick = (preset: PresetTimer) => {
     const modeMap: { [key: string]: string } = {
-      'Coffee': 'coffee',
-      'Exercise': 'workout',
-      'Lab': 'lab',
-      'Meeting': 'meeting',
-      'Focus': 'focus',
       'Break': 'break',
+      'Lunch': 'break',
+      'Session': 'session',
+      'Training': 'training',
     };
     
     onStartTimer({

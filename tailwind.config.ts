@@ -74,6 +74,9 @@ export default {
 					blue: 'hsl(var(--timer-blue))'
 				}
 			},
+			backgroundImage: {
+				'gradient-background': 'var(--gradient-background)'
+			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
