@@ -4,14 +4,18 @@ import { StartTimerSection } from './StartTimerSection';
 import { PresetTimerGrid } from './PresetTimerGrid';
 import { CountdownTimer } from './CountdownTimer';
 import { ThemeToggle } from './ThemeToggle';
+import { TimerHistory } from './TimerHistory';
 import { formatInTimeZone } from 'date-fns-tz';
-import { TimerData } from '@/types/timer';
+import { TimerData, ActiveTimerState } from '@/types/timer';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { useTimerHistory } from '@/hooks/useTimerHistory';
 
 export const TimerDashboard: React.FC = () => {
-  const [selectedTimezone, setSelectedTimezone] = useState('America/New_York');
+  const [selectedTimezone, setSelectedTimezone] = useLocalStorage('timer-timezone', 'America/New_York');
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
-  const [activeTimer, setActiveTimer] = useState<TimerData | null>(null);
+  const [theme, setTheme] = useLocalStorage<'light' | 'dark'>('timer-theme', 'dark');
+  const [activeTimer, setActiveTimer] = useLocalStorage<ActiveTimerState | null>('timer-active', null);
+  const { history, addEntry, clearHistory } = useTimerHistory();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -24,14 +28,28 @@ export const TimerDashboard: React.FC = () => {
     document.documentElement.classList.toggle('light', theme === 'light');
   }, [theme]);
 
+  useEffect(() => {
+    if (!activeTimer) {
+      document.title = 'Meeting Timer';
+    }
+  }, [activeTimer]);
+
   const formattedTime = formatInTimeZone(currentTime, selectedTimezone, 'h:mm:ss a');
   const formattedDate = formatInTimeZone(currentTime, selectedTimezone, 'EEEE, MMMM d, yyyy');
 
   const handleStartTimer = (timerData: TimerData) => {
-    setActiveTimer(timerData);
+    setActiveTimer({
+      ...timerData,
+      startedAt: Date.now(),
+    });
   };
 
   const handleBackToDashboard = () => {
+    setActiveTimer(null);
+  };
+
+  const handleTimerComplete = (label: string, mode: TimerData['mode'], durationMinutes: number) => {
+    addEntry({ label, mode, durationMinutes, completedAt: Date.now() });
     setActiveTimer(null);
   };
 
@@ -42,7 +60,9 @@ export const TimerDashboard: React.FC = () => {
         mode={activeTimer.mode}
         label={activeTimer.label}
         timezone={selectedTimezone}
+        startedAt={activeTimer.startedAt}
         onBack={handleBackToDashboard}
+        onTimerComplete={handleTimerComplete}
       />
     );
   }
@@ -52,7 +72,7 @@ export const TimerDashboard: React.FC = () => {
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-primary/5 pointer-events-none" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(120,119,198,0.15),transparent_50%)] pointer-events-none" />
-      
+
       {/* Header */}
       <header className="relative z-10 flex items-center justify-between p-4 md:p-6">
         <div className="flex items-center space-x-4">
@@ -68,8 +88,8 @@ export const TimerDashboard: React.FC = () => {
       <main className="relative z-10 container mx-auto px-4 md:px-6 pb-8 space-y-8">
         {/* Timezone Selector */}
         <section className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <TimezoneSelector 
-            selectedTimezone={selectedTimezone} 
+          <TimezoneSelector
+            selectedTimezone={selectedTimezone}
             onTimezoneChange={setSelectedTimezone}
           />
           <div className="md:hidden text-sm text-muted-foreground">
@@ -79,12 +99,19 @@ export const TimerDashboard: React.FC = () => {
 
         {/* Start Timer Section */}
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <StartTimerSection 
-            timezone={selectedTimezone} 
+          <StartTimerSection
+            timezone={selectedTimezone}
             onStartTimer={handleStartTimer}
           />
           <PresetTimerGrid onStartTimer={handleStartTimer} />
         </section>
+
+        {/* Timer History */}
+        {history.length > 0 && (
+          <section>
+            <TimerHistory history={history} onClearHistory={clearHistory} />
+          </section>
+        )}
       </main>
     </div>
   );

@@ -5,3 +5,15 @@ export interface TimerData {
   mode: TimerMode;
   label: string;
 }
+
+export interface ActiveTimerState extends TimerData {
+  startedAt: number;
+}
+
+export interface TimerHistoryEntry {
+  id: string;
+  label: string;
+  mode: TimerMode;
+  durationMinutes: number;
+  completedAt: number;
+}

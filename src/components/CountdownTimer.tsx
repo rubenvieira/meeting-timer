@@ -1,14 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
-import { 
-  Play, 
-  Pause, 
-  RotateCcw, 
-  ArrowLeft, 
-  Volume2, 
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  Play,
+  Pause,
+  RotateCcw,
+  ArrowLeft,
+  Volume2,
   VolumeX,
   Coffee,
   Apple,
@@ -17,18 +18,23 @@ import {
   Timer,
   Clock,
   FileImage,
-  Trash2
+  Trash2,
+  Keyboard,
+  Plus,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { formatInTimeZone } from 'date-fns-tz';
-import { TimerMode } from '@/types/timer';
+import { TimerMode, TimerData } from '@/types/timer';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 
 interface CountdownTimerProps {
   initialMinutes: number;
   mode: TimerMode;
   label: string;
   timezone: string;
+  startedAt: number;
   onBack: () => void;
+  onTimerComplete: (label: string, mode: TimerData['mode'], durationMinutes: number) => void;
 }
 
 const modeIcons: Record<TimerMode, React.ComponentType<{ className?: string }>> = {
@@ -69,19 +75,40 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
   mode,
   label,
   timezone,
+  startedAt,
   onBack,
+  onTimerComplete,
 }) => {
-  const [timeLeft, setTimeLeft] = useState(initialMinutes * 60); // Convert to seconds
-  const [isRunning, setIsRunning] = useState(true);
-  const [isComplete, setIsComplete] = useState(false);
+  const [totalSeconds, setTotalSeconds] = useState(initialMinutes * 60);
+  const [timeLeft, setTimeLeft] = useState(() => {
+    const elapsed = (Date.now() - startedAt) / 1000;
+    const remaining = Math.max(0, initialMinutes * 60 - Math.floor(elapsed));
+    return remaining;
+  });
+  const [isRunning, setIsRunning] = useState(() => {
+    const elapsed = (Date.now() - startedAt) / 1000;
+    return initialMinutes * 60 - Math.floor(elapsed) > 0;
+  });
+  const [isComplete, setIsComplete] = useState(() => {
+    const elapsed = (Date.now() - startedAt) / 1000;
+    return initialMinutes * 60 - Math.floor(elapsed) <= 0;
+  });
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [notes, setNotes] = useState('');
   const [pastedImages, setPastedImages] = useState<string[]>([]);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const notesRef = useRef<HTMLTextAreaElement>(null);
+  const completedRef = useRef(false);
   const { toast } = useToast();
 
-  const totalSeconds = initialMinutes * 60;
   const progress = ((totalSeconds - timeLeft) / totalSeconds) * 100;
+
+  // Request desktop notification permission
+  useEffect(() => {
+    if (isRunning && 'Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+  }, [isRunning]);
 
   const playNotificationSound = () => {
     try {
@@ -107,20 +134,33 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
     }
   };
 
+  const handleComplete = () => {
+    if (completedRef.current) return;
+    completedRef.current = true;
+    setIsComplete(true);
+    setIsRunning(false);
+    if (soundEnabled) {
+      playNotificationSound();
+    }
+    toast({
+      title: "Timer Complete!",
+      description: `${label} timer has finished`,
+    });
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification('Timer Complete!', {
+        body: `${label} timer has finished`,
+        tag: 'timer-complete',
+      });
+    }
+    onTimerComplete(label, mode, initialMinutes);
+  };
+
   useEffect(() => {
     if (isRunning && timeLeft > 0) {
       intervalRef.current = setInterval(() => {
         setTimeLeft((prev) => {
           if (prev <= 1) {
-            setIsComplete(true);
-            setIsRunning(false);
-            if (soundEnabled) {
-              playNotificationSound();
-            }
-            toast({
-              title: "Timer Complete!",
-              description: `${label} timer has finished`,
-            });
+            handleComplete();
             return 0;
           }
           return prev - 1;
@@ -130,6 +170,9 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
+      if (timeLeft === 0 && !isComplete) {
+        handleComplete();
+      }
     }
 
     return () => {
@@ -137,7 +180,36 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
         clearInterval(intervalRef.current);
       }
     };
-  }, [isRunning, timeLeft, soundEnabled, label, toast]);
+  }, [isRunning, timeLeft > 0]);
+
+  // Browser tab title updates
+  useEffect(() => {
+    if (isComplete) {
+      document.title = 'Timer Complete! — Meeting Timer';
+    } else if (!isRunning && timeLeft < totalSeconds) {
+      document.title = `Paused — ${formatTime(timeLeft)} — Meeting Timer`;
+    } else if (isRunning) {
+      document.title = `${formatTime(timeLeft)} — Meeting Timer`;
+    }
+
+    return () => {
+      document.title = 'Meeting Timer';
+    };
+  }, [timeLeft, isRunning, isComplete]);
+
+  // Flash title when complete
+  useEffect(() => {
+    if (!isComplete) return;
+    const flashInterval = setInterval(() => {
+      document.title = document.title === 'Timer Complete! — Meeting Timer'
+        ? `${label} — Meeting Timer`
+        : 'Timer Complete! — Meeting Timer';
+    }, 1000);
+    return () => {
+      clearInterval(flashInterval);
+      document.title = 'Meeting Timer';
+    };
+  }, [isComplete, label]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -150,16 +222,44 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
   };
 
   const handleReset = () => {
+    setTotalSeconds(initialMinutes * 60);
     setTimeLeft(initialMinutes * 60);
     setIsRunning(false);
     setIsComplete(false);
+    completedRef.current = false;
   };
 
   const handleStartNew = () => {
+    setTotalSeconds(initialMinutes * 60);
     setTimeLeft(initialMinutes * 60);
     setIsComplete(false);
+    completedRef.current = false;
     setIsRunning(true);
   };
+
+  const handleAddTime = (additionalSeconds: number) => {
+    setTotalSeconds(prev => prev + additionalSeconds);
+    setTimeLeft(prev => prev + additionalSeconds);
+    if (isComplete) {
+      setIsComplete(false);
+      completedRef.current = false;
+      setIsRunning(true);
+    }
+  };
+
+  // Keyboard shortcuts
+  const shortcuts = useMemo(() => ({
+    ' ': () => {
+      if (isComplete) handleStartNew();
+      else handlePlayPause();
+    },
+    'r': handleReset,
+    'Escape': onBack,
+    'm': () => setSoundEnabled(prev => !prev),
+    'n': () => notesRef.current?.focus(),
+  }), [isComplete, isRunning]);
+
+  useKeyboardShortcuts(shortcuts);
 
   const handlePaste = async (e: React.ClipboardEvent) => {
     const items = e.clipboardData?.items;
@@ -190,6 +290,13 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
     return formatInTimeZone(endTime, timezone, 'h:mm:ss a');
   };
 
+  const getTimerTextClass = () => {
+    if (isComplete) return 'text-primary animate-pulse';
+    if (timeLeft <= 10) return 'text-destructive animate-pulse';
+    if (timeLeft <= 60) return 'text-timer-warning';
+    return 'text-foreground';
+  };
+
   const ModeIcon = modeIcons[mode] || Timer;
 
   return (
@@ -197,7 +304,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-timer-purple/5 pointer-events-none" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(120,119,198,0.1),transparent_70%)] pointer-events-none" />
-      
+
       {/* Header */}
       <header className="relative z-10 flex items-center justify-between p-4 md:p-6">
         <Button
@@ -208,28 +315,53 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back
         </Button>
-        
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => setSoundEnabled(!soundEnabled)}
-          className="bg-card/50 border-border/50 hover:bg-card/80"
-        >
-          {soundEnabled ? (
-            <Volume2 className="h-4 w-4" />
-          ) : (
-            <VolumeX className="h-4 w-4" />
-          )}
-        </Button>
+
+        <div className="flex items-center space-x-2">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="bg-card/50 border-border/50 hover:bg-card/80"
+                >
+                  <Keyboard className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="max-w-xs">
+                <div className="text-xs space-y-1">
+                  <div><kbd className="px-1 bg-muted rounded text-[10px]">Space</kbd> Play/Pause</div>
+                  <div><kbd className="px-1 bg-muted rounded text-[10px]">R</kbd> Reset</div>
+                  <div><kbd className="px-1 bg-muted rounded text-[10px]">Esc</kbd> Back</div>
+                  <div><kbd className="px-1 bg-muted rounded text-[10px]">M</kbd> Mute/Unmute</div>
+                  <div><kbd className="px-1 bg-muted rounded text-[10px]">N</kbd> Focus Notes</div>
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setSoundEnabled(!soundEnabled)}
+            className="bg-card/50 border-border/50 hover:bg-card/80"
+          >
+            {soundEnabled ? (
+              <Volume2 className="h-4 w-4" />
+            ) : (
+              <VolumeX className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
       </header>
 
       {/* Main Timer Display */}
       <main className="relative z-10 container mx-auto px-4 md:px-6 pb-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 min-h-[calc(100vh-120px)]">
-          
+
           {/* Timer Section */}
           <div className="flex flex-col items-center justify-center space-y-8">
-            
+
             {/* Mode Icon and Label */}
             <div className="text-center space-y-4">
               <div className={`mx-auto p-6 rounded-full ${modeBgClasses[mode]} w-fit`}>
@@ -240,15 +372,13 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
 
             {/* Progress Ring */}
             <div className="relative w-80 h-80 md:w-96 md:h-96">
-              <Progress 
-                value={progress} 
+              <Progress
+                value={progress}
                 className="absolute inset-0 w-full h-full [&>div]:rounded-full"
               />
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
-                  <div className={`text-6xl md:text-8xl font-mono font-bold ${
-                    isComplete ? 'text-primary' : 'text-foreground'
-                  } ${isComplete ? 'animate-pulse' : ''}`}>
+                  <div className={`text-6xl md:text-8xl font-mono font-bold ${getTimerTextClass()} transition-colors duration-500`}>
                     {formatTime(timeLeft)}
                   </div>
                   {!isComplete && (
@@ -287,7 +417,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
             </Card>
 
             {/* Controls */}
-            <div className="flex items-center space-x-4">
+            <div className="flex flex-wrap items-center justify-center gap-3">
               <Button
                 variant="outline"
                 size="lg"
@@ -297,7 +427,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
                 <RotateCcw className="h-5 w-5 mr-2" />
                 Reset
               </Button>
-              
+
               <Button
                 size="lg"
                 onClick={isComplete ? handleStartNew : handlePlayPause}
@@ -326,6 +456,30 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
                   </>
                 )}
               </Button>
+
+              {/* Add Time Buttons */}
+              {!isComplete && (
+                <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleAddTime(60)}
+                    className="bg-card/50 border-border/50 hover:bg-card/80"
+                  >
+                    <Plus className="h-3 w-3 mr-1" />
+                    1 min
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleAddTime(300)}
+                    className="bg-card/50 border-border/50 hover:bg-card/80"
+                  >
+                    <Plus className="h-3 w-3 mr-1" />
+                    5 min
+                  </Button>
+                </>
+              )}
             </div>
 
             {/* Completion Message */}
@@ -333,7 +487,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
               <Card className="bg-primary/10 border-primary/30 backdrop-blur-sm animate-pulse">
                 <CardContent className="p-4 text-center">
                   <div className="text-lg font-semibold text-primary">
-                    🎉 Timer Complete!
+                    Timer Complete!
                   </div>
                   <div className="text-sm text-muted-foreground mt-1">
                     Your {label.toLowerCase()} session has finished
@@ -351,15 +505,16 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
                   <FileImage className="h-5 w-5 text-muted-foreground" />
                   <h3 className="text-lg font-semibold text-foreground">Meeting Notes</h3>
                 </div>
-                
+
                 <Textarea
+                  ref={notesRef}
                   placeholder="Add notes, paste screenshots, or other meeting content here..."
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   onPaste={handlePaste}
                   className="flex-1 min-h-[200px] bg-background/50 border-border/50 resize-none"
                 />
-                
+
                 {pastedImages.length > 0 && (
                   <div className="mt-4 space-y-4">
                     <div className="text-sm font-medium text-muted-foreground">
