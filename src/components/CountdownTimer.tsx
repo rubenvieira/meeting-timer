@@ -21,31 +21,47 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { formatInTimeZone } from 'date-fns-tz';
+import { TimerMode } from '@/types/timer';
 
 interface CountdownTimerProps {
   initialMinutes: number;
-  mode: string;
+  mode: TimerMode;
   label: string;
   timezone: string;
   onBack: () => void;
 }
 
-const modeIcons = {
+const modeIcons: Record<TimerMode, React.ComponentType<{ className?: string }>> = {
   coffee: Coffee,
   workout: Apple,
   lab: TestTube,
   meeting: Users,
   focus: Timer,
   break: Clock,
+  session: Users,
+  training: TestTube,
 };
 
-const modeColors = {
-  coffee: 'timer-orange',
-  workout: 'timer-success',
-  lab: 'timer-blue',
-  meeting: 'timer-purple',
-  focus: 'timer-teal',
-  break: 'timer-warning',
+const modeBgClasses: Record<TimerMode, string> = {
+  coffee: 'bg-timer-orange/20',
+  workout: 'bg-timer-success/20',
+  lab: 'bg-timer-blue/20',
+  meeting: 'bg-timer-purple/20',
+  focus: 'bg-timer-teal/20',
+  break: 'bg-timer-warning/20',
+  session: 'bg-timer-purple/20',
+  training: 'bg-timer-blue/20',
+};
+
+const modeTextClasses: Record<TimerMode, string> = {
+  coffee: 'text-timer-orange',
+  workout: 'text-timer-success',
+  lab: 'text-timer-blue',
+  meeting: 'text-timer-purple',
+  focus: 'text-timer-teal',
+  break: 'text-timer-warning',
+  session: 'text-timer-purple',
+  training: 'text-timer-blue',
 };
 
 export const CountdownTimer: React.FC<CountdownTimerProps> = ({
@@ -67,6 +83,30 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
   const totalSeconds = initialMinutes * 60;
   const progress = ((totalSeconds - timeLeft) / totalSeconds) * 100;
 
+  const playNotificationSound = () => {
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const playBeep = (time: number, frequency: number) => {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        oscillator.frequency.value = frequency;
+        oscillator.type = 'sine';
+        gainNode.gain.value = 0.3;
+        oscillator.start(time);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, time + 0.3);
+        oscillator.stop(time + 0.3);
+      };
+      const now = audioContext.currentTime;
+      playBeep(now, 880);
+      playBeep(now + 0.35, 880);
+      playBeep(now + 0.7, 1174.66);
+    } catch {
+      // Web Audio API not available
+    }
+  };
+
   useEffect(() => {
     if (isRunning && timeLeft > 0) {
       intervalRef.current = setInterval(() => {
@@ -75,12 +115,12 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
             setIsComplete(true);
             setIsRunning(false);
             if (soundEnabled) {
-              // Play notification sound (you could add actual audio here)
-              toast({
-                title: "Timer Complete!",
-                description: `${label} timer has finished`,
-              });
+              playNotificationSound();
             }
+            toast({
+              title: "Timer Complete!",
+              description: `${label} timer has finished`,
+            });
             return 0;
           }
           return prev - 1;
@@ -115,6 +155,12 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
     setIsComplete(false);
   };
 
+  const handleStartNew = () => {
+    setTimeLeft(initialMinutes * 60);
+    setIsComplete(false);
+    setIsRunning(true);
+  };
+
   const handlePaste = async (e: React.ClipboardEvent) => {
     const items = e.clipboardData?.items;
     if (!items) return;
@@ -144,8 +190,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
     return formatInTimeZone(endTime, timezone, 'h:mm:ss a');
   };
 
-  const ModeIcon = modeIcons[mode as keyof typeof modeIcons] || Timer;
-  const modeColor = modeColors[mode as keyof typeof modeColors] || 'timer-teal';
+  const ModeIcon = modeIcons[mode] || Timer;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 relative overflow-hidden">
@@ -187,8 +232,8 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
             
             {/* Mode Icon and Label */}
             <div className="text-center space-y-4">
-              <div className={`mx-auto p-6 rounded-full bg-${modeColor}/20 w-fit`}>
-                <ModeIcon className={`h-12 w-12 text-${modeColor}`} />
+              <div className={`mx-auto p-6 rounded-full ${modeBgClasses[mode]} w-fit`}>
+                <ModeIcon className={`h-12 w-12 ${modeTextClasses[mode]}`} />
               </div>
               <h1 className="text-2xl font-semibold text-foreground">{label}</h1>
             </div>
@@ -255,7 +300,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
               
               <Button
                 size="lg"
-                onClick={handlePlayPause}
+                onClick={isComplete ? handleStartNew : handlePlayPause}
                 className={`px-8 ${
                   isComplete
                     ? 'bg-primary hover:bg-primary/90'

@@ -4,14 +4,8 @@ import { StartTimerSection } from './StartTimerSection';
 import { PresetTimerGrid } from './PresetTimerGrid';
 import { CountdownTimer } from './CountdownTimer';
 import { ThemeToggle } from './ThemeToggle';
-import { format } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
-
-interface TimerData {
-  minutes: number;
-  mode: string;
-  label: string;
-}
+import { TimerData } from '@/types/timer';
 
 export const TimerDashboard: React.FC = () => {
   const [selectedTimezone, setSelectedTimezone] = useState('America/New_York');

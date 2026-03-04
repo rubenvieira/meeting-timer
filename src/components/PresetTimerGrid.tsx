@@ -1,16 +1,32 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Coffee, Apple, TestTube, Users, Clock, Timer } from 'lucide-react';
-
-interface TimerData {
-  minutes: number;
-  mode: string;
-  label: string;
-}
+import { TimerData, TimerMode } from '@/types/timer';
 
 interface PresetTimerGridProps {
   onStartTimer: (timerData: TimerData) => void;
 }
+
+const colorBgClasses: Record<string, string> = {
+  'timer-orange': 'bg-timer-orange/20',
+  'timer-success': 'bg-timer-success/20',
+  'timer-purple': 'bg-timer-purple/20',
+  'timer-blue': 'bg-timer-blue/20',
+};
+
+const colorBgHoverClasses: Record<string, string> = {
+  'timer-orange': 'group-hover:bg-timer-orange/30',
+  'timer-success': 'group-hover:bg-timer-success/30',
+  'timer-purple': 'group-hover:bg-timer-purple/30',
+  'timer-blue': 'group-hover:bg-timer-blue/30',
+};
+
+const colorTextClasses: Record<string, string> = {
+  'timer-orange': 'text-timer-orange',
+  'timer-success': 'text-timer-success',
+  'timer-purple': 'text-timer-purple',
+  'timer-blue': 'text-timer-blue',
+};
 
 interface PresetTimer {
   id: string;
@@ -39,16 +55,16 @@ const presetTimers: PresetTimer[] = [
 
 export const PresetTimerGrid: React.FC<PresetTimerGridProps> = ({ onStartTimer }) => {
   const handlePresetClick = (preset: PresetTimer) => {
-    const modeMap: { [key: string]: string } = {
+    const modeMap: Record<string, TimerMode> = {
       'Break': 'break',
       'Lunch': 'break',
       'Session': 'session',
       'Training': 'training',
     };
-    
+
     onStartTimer({
       minutes: preset.minutes,
-      mode: modeMap[preset.category] || 'focus',
+      mode: modeMap[preset.category] || 'focus' as TimerMode,
       label: `${preset.category} (${preset.label})`,
     });
   };
@@ -68,8 +84,8 @@ export const PresetTimerGrid: React.FC<PresetTimerGridProps> = ({ onStartTimer }
             onClick={() => handlePresetClick(preset)}
           >
             <CardContent className="p-4 flex flex-col items-center space-y-3">
-              <div className={`p-3 rounded-full bg-${preset.color}/20 group-hover:bg-${preset.color}/30 transition-colors`}>
-                <preset.icon className={`h-6 w-6 text-${preset.color}`} />
+              <div className={`p-3 rounded-full ${colorBgClasses[preset.color]} ${colorBgHoverClasses[preset.color]} transition-colors`}>
+                <preset.icon className={`h-6 w-6 ${colorTextClasses[preset.color]}`} />
               </div>
               
               <div className="text-center">

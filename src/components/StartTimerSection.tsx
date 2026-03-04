@@ -4,12 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Play, Coffee, Dumbbell, TestTube, Users, Clock } from 'lucide-react';
-
-interface TimerData {
-  minutes: number;
-  mode: string;
-  label: string;
-}
+import { TimerData, TimerMode } from '@/types/timer';
 
 interface StartTimerSectionProps {
   timezone: string;
@@ -41,7 +36,8 @@ export const StartTimerSection: React.FC<StartTimerSectionProps> = ({ timezone, 
 
   const adjustTime = (minutes: number) => {
     const [hours, mins] = time.split(':').map(Number);
-    const totalMinutes = hours * 60 + mins + minutes;
+    let totalMinutes = hours * 60 + mins + minutes;
+    if (totalMinutes < 0) totalMinutes = 0;
     const newHours = Math.floor(totalMinutes / 60) % 24;
     const newMins = totalMinutes % 60;
     setTime(`${newHours.toString().padStart(2, '0')}:${newMins.toString().padStart(2, '0')}`);
@@ -78,7 +74,7 @@ export const StartTimerSection: React.FC<StartTimerSectionProps> = ({ timezone, 
     
     onStartTimer({
       minutes: durationMinutes,
-      mode: selectedMode,
+      mode: selectedMode as TimerMode,
       label: `${selectedModeData?.label} (${time} ${ampm})`,
     });
   };
