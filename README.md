@@ -1,73 +1,64 @@
-# Welcome to your Lovable project
+# ⏱️ Meeting Timer
 
-## Project info
+<div align="center">
+  <img src="https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB" alt="React" />
+  <img src="https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white" alt="Vite" />
+  <img src="https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="TailwindCSS" />
+  <p><em>A modern, feature-rich meeting timer designed to keep your team on track. Built with React, Vite, Tailwind CSS, and shadcn/ui.</em></p>
+</div>
 
-**URL**: https://lovable.dev/projects/5d4d015b-7dcc-4eaf-961d-51187b564b0f
+## ✨ Features
 
-## How can I edit this code?
+- **⏱️ Precision Countdowns**: Custom timer setup for any meeting length to ensure timeboxing strictly.
+- **⚡ Preset Timers**: A quick-start grid for common meeting formats (e.g., Standups, pomodoros, 1:1s, brain-storming sessions).
+- **🕰️ Timezone Support**: Seamlessly coordinate and select timezones when working across different global teams.
+- **📜 Timer History**: Automatically tracks past meeting durations and provides session history logs.
+- **🌗 Dark Mode**: Full theming support with a modern UI toggle.
+- **💅 Beautiful UI**: Clean, engaging, glassmorphic aesthetics powered by `shadcn/ui` and Radix.
 
-There are several ways of editing your application.
+## 🚀 Getting Started
 
-**Use Lovable**
+### Prerequisites
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/5d4d015b-7dcc-4eaf-961d-51187b564b0f) and start prompting.
+You need Node.js & npm installed - [Install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
-Changes made via Lovable will be committed automatically to this repo.
+### Installation
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
+1. **Clone the repository:**
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+git clone https://github.com/rubenvieira/meeting-timer.git
+```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+2. **Navigate to the project directory:**
+```sh
+cd meeting-timer
+```
 
-# Step 3: Install the necessary dependencies.
-npm i
+3. **Install the dependencies:**
+```sh
+npm install
+```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+4. **Start the development server:**
+```sh
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Visit the local development URL (usually `http://localhost:5173`) in your browser to see the app running.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 🛠️ Technologies Used
 
-**Use GitHub Codespaces**
+- **[Vite](https://vitejs.dev/)** - Next-Generation Frontend Tooling
+- **[React 18](https://reactjs.org/)** - A JavaScript library for building user interfaces
+- **[TypeScript](https://www.typescriptlang.org/)** - Typed JavaScript at Any Scale
+- **[Tailwind CSS](https://tailwindcss.com/)** - Rapidly build modern websites without ever leaving your HTML
+- **[shadcn/ui](https://ui.shadcn.com/)** - Beautifully designed components built with Radix UI and Tailwind CSS
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 🤝 Contributing
 
-## What technologies are used for this project?
+Contributions, issues, and feature requests are welcome! Feel free to check the issues page.
 
-This project is built with:
+## 📄 License
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/5d4d015b-7dcc-4eaf-961d-51187b564b0f) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+This project is licensed under the MIT License.
