@@ -29,10 +29,10 @@ jobs:
           if grep -q "vite" package.json; then
             # Patch Vite config and React Router dynamically to use the subpath
             if [ -f "vite.config.ts" ]; then
-                sed -i 's/export default defineConfig({/export default defineConfig({ base: process.env.VITE_BASE_PATH || "/", /g' vite.config.ts
+                sed -i 's#export default defineConfig({#export default defineConfig({ base: process.env.VITE_BASE_PATH || "/", #g' vite.config.ts
             fi
             if grep -q "BrowserRouter" src/App.tsx; then
-                sed -i 's/<BrowserRouter>/<BrowserRouter basename="/tools/meeting-timer">/g' src/App.tsx
+                sed -i 's|<BrowserRouter>|<BrowserRouter basename="/tools/meeting-timer">|g' src/App.tsx
             fi
             npm run build
           else
