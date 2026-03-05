@@ -87,7 +87,7 @@ export const StartTimerSection: React.FC<StartTimerSectionProps> = ({ timezone, 
           <span>Start Timer</span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-6 xl:space-y-8">
         {/* Timer Mode Icons */}
         <div className="flex items-center justify-center space-x-4">
           {timerModes.map((mode) => (
@@ -112,7 +112,7 @@ export const StartTimerSection: React.FC<StartTimerSectionProps> = ({ timezone, 
             type="time"
             value={time}
             onChange={handleTimeChange}
-            className="flex-1 bg-background/50 border-border/50 text-lg font-mono"
+            className="flex-1 bg-background/50 border-border/50 text-lg xl:text-xl font-mono"
           />
           <Select value={ampm} onValueChange={setAmpm}>
             <SelectTrigger className="w-20 bg-background/50 border-border/50">
@@ -126,7 +126,7 @@ export const StartTimerSection: React.FC<StartTimerSectionProps> = ({ timezone, 
         </div>
 
         {/* Adjustment Buttons */}
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 xl:gap-3">
           <Button
             variant="outline"
             size="sm"

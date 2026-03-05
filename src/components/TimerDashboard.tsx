@@ -74,9 +74,9 @@ export const TimerDashboard: React.FC = () => {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(120,119,198,0.15),transparent_50%)] pointer-events-none" />
 
       {/* Header */}
-      <header className="relative z-10 flex items-center justify-between p-4 md:p-6">
+      <header className="relative z-10 flex items-center justify-between p-4 md:p-6 xl:p-8">
         <div className="flex items-center space-x-4">
-          <div className="text-2xl font-bold text-foreground">Timer Dashboard</div>
+          <div className="text-2xl xl:text-3xl font-bold text-foreground">Timer Dashboard</div>
           <div className="hidden md:block text-sm text-muted-foreground">
             {formattedDate} • {formattedTime}
           </div>
@@ -85,7 +85,7 @@ export const TimerDashboard: React.FC = () => {
       </header>
 
       {/* Main Content */}
-      <main className="relative z-10 container mx-auto pb-8 space-y-8">
+      <main className="relative z-10 container mx-auto pb-8 xl:pb-12 space-y-8 xl:space-y-12">
         {/* Timezone Selector */}
         <section className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <TimezoneSelector
@@ -98,7 +98,7 @@ export const TimerDashboard: React.FC = () => {
         </section>
 
         {/* Main Grid: 2 cols at lg, 3 cols at xl+ */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+        <section className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 xl:gap-10">
           <StartTimerSection
             timezone={selectedTimezone}
             onStartTimer={handleStartTimer}

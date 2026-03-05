@@ -68,7 +68,7 @@ export const TimerHistory: React.FC<TimerHistoryProps> = ({ history, onClearHist
             return (
               <div
                 key={entry.id}
-                className="flex items-center justify-between p-3 rounded-lg bg-background/50 border border-border/30"
+                className="flex items-center justify-between p-3 xl:p-4 rounded-lg bg-background/50 border border-border/30"
               >
                 <div className="flex items-center space-x-3">
                   <ModeIcon className={`h-4 w-4 ${textClass}`} />

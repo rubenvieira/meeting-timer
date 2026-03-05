@@ -83,9 +83,9 @@ export const PresetTimerGrid: React.FC<PresetTimerGridProps> = ({ onStartTimer }
             className="group cursor-pointer bg-card/50 border-border/50 hover:bg-card/80 transition-all duration-300 hover:shadow-card hover:scale-105 active:scale-95"
             onClick={() => handlePresetClick(preset)}
           >
-            <CardContent className="p-4 flex flex-col items-center space-y-3">
+            <CardContent className="p-4 xl:p-6 flex flex-col items-center space-y-3">
               <div className={`p-3 rounded-full ${colorBgClasses[preset.color]} ${colorBgHoverClasses[preset.color]} transition-colors`}>
-                <preset.icon className={`h-6 w-6 ${colorTextClasses[preset.color]}`} />
+                <preset.icon className={`h-6 w-6 xl:h-8 xl:w-8 ${colorTextClasses[preset.color]}`} />
               </div>
               
               <div className="text-center">

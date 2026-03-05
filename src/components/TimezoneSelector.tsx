@@ -45,7 +45,7 @@ export const TimezoneSelector: React.FC<TimezoneSelectorProps> = ({
       </div>
       
       <Select value={selectedTimezone} onValueChange={onTimezoneChange}>
-        <SelectTrigger className="w-[280px] bg-card/50 border-border/50 hover:bg-card/80 transition-colors">
+        <SelectTrigger className="w-[280px] xl:w-[360px] bg-card/50 border-border/50 hover:bg-card/80 transition-colors">
           <SelectValue placeholder="Select timezone" />
         </SelectTrigger>
         <SelectContent className="bg-popover backdrop-blur-sm border-border/50">

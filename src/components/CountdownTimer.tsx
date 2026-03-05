@@ -306,7 +306,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(120,119,198,0.1),transparent_70%)] pointer-events-none" />
 
       {/* Header */}
-      <header className="relative z-10 flex items-center justify-between p-4 md:p-6">
+      <header className="relative z-10 flex items-center justify-between p-4 md:p-6 xl:p-8">
         <Button
           variant="outline"
           onClick={onBack}
@@ -378,7 +378,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
               />
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
-                  <div className={`text-6xl md:text-8xl xl:text-9xl font-mono font-bold ${getTimerTextClass()} transition-colors duration-500`}>
+                  <div className={`text-6xl md:text-8xl xl:text-9xl 2xl:text-[10rem] font-mono font-bold ${getTimerTextClass()} transition-colors duration-500`}>
                     {formatTime(timeLeft)}
                   </div>
                   {!isComplete && (
@@ -392,22 +392,22 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
 
             {/* Timer Info */}
             <Card className="bg-card/50 border-border/50 backdrop-blur-sm">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between space-x-8">
+              <CardContent className="p-6 xl:p-8">
+                <div className="flex items-center justify-between space-x-8 xl:space-x-12">
                   <div className="text-center">
-                    <div className="text-2xl font-semibold text-foreground">
+                    <div className="text-2xl xl:text-3xl font-semibold text-foreground">
                       {Math.floor(timeLeft / 60)}
                     </div>
                     <div className="text-sm text-muted-foreground">Minutes</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-semibold text-foreground">
+                    <div className="text-2xl xl:text-3xl font-semibold text-foreground">
                       {timeLeft % 60}
                     </div>
                     <div className="text-sm text-muted-foreground">Seconds</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-semibold text-primary">
+                    <div className="text-2xl xl:text-3xl font-semibold text-primary">
                       {Math.round(progress)}%
                     </div>
                     <div className="text-sm text-muted-foreground">Complete</div>
@@ -417,7 +417,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
             </Card>
 
             {/* Controls */}
-            <div className="flex flex-wrap items-center justify-center gap-3">
+            <div className="flex flex-wrap items-center justify-center gap-3 xl:gap-4">
               <Button
                 variant="outline"
                 size="lg"
@@ -501,7 +501,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
           <div className="flex flex-col space-y-4">
             <Card className="bg-card/50 border-border/50 backdrop-blur-sm h-full">
               <CardContent className="p-6 h-full flex flex-col">
-                <div className="flex items-center space-x-2 mb-4">
+                <div className="flex items-center space-x-2 mb-4 xl:mb-6">
                   <FileImage className="h-5 w-5 text-muted-foreground" />
                   <h3 className="text-lg font-semibold text-foreground">Meeting Notes</h3>
                 </div>
@@ -520,7 +520,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
                     <div className="text-sm font-medium text-muted-foreground">
                       Pasted Images ({pastedImages.length})
                     </div>
-                    <div className="grid grid-cols-1 gap-4 max-h-60 overflow-y-auto">
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 max-h-60 xl:max-h-80 overflow-y-auto">
                       {pastedImages.map((image, index) => (
                         <div key={index} className="relative group">
                           <img
