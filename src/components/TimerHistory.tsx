@@ -60,7 +60,7 @@ export const TimerHistory: React.FC<TimerHistoryProps> = ({ history, onClearHist
         </Button>
       </CardHeader>
       <CardContent>
-        <div className="space-y-2">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-1 gap-2 max-h-[60vh] overflow-y-auto">
           {history.map((entry) => {
             const ModeIcon = modeIcons[entry.mode] || Timer;
             const textClass = modeTextClasses[entry.mode] || 'text-timer-teal';

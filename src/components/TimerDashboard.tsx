@@ -85,7 +85,7 @@ export const TimerDashboard: React.FC = () => {
       </header>
 
       {/* Main Content */}
-      <main className="relative z-10 container mx-auto px-4 md:px-6 pb-8 space-y-8">
+      <main className="relative z-10 container mx-auto pb-8 space-y-8">
         {/* Timezone Selector */}
         <section className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <TimezoneSelector
@@ -97,21 +97,19 @@ export const TimerDashboard: React.FC = () => {
           </div>
         </section>
 
-        {/* Start Timer Section */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Main Grid: 2 cols at lg, 3 cols at xl+ */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
           <StartTimerSection
             timezone={selectedTimezone}
             onStartTimer={handleStartTimer}
           />
           <PresetTimerGrid onStartTimer={handleStartTimer} />
+          {history.length > 0 && (
+            <div className="lg:col-span-2 xl:col-span-1">
+              <TimerHistory history={history} onClearHistory={clearHistory} />
+            </div>
+          )}
         </section>
-
-        {/* Timer History */}
-        {history.length > 0 && (
-          <section>
-            <TimerHistory history={history} onClearHistory={clearHistory} />
-          </section>
-        )}
       </main>
     </div>
   );

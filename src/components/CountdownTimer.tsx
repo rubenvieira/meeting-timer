@@ -356,8 +356,8 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
       </header>
 
       {/* Main Timer Display */}
-      <main className="relative z-10 container mx-auto px-4 md:px-6 pb-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 min-h-[calc(100vh-120px)]">
+      <main className="relative z-10 container mx-auto pb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 xl:gap-12 min-h-[calc(100vh-120px)]">
 
           {/* Timer Section */}
           <div className="flex flex-col items-center justify-center space-y-8">
@@ -371,14 +371,14 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
             </div>
 
             {/* Progress Ring */}
-            <div className="relative w-80 h-80 md:w-96 md:h-96">
+            <div className="relative w-80 h-80 md:w-96 md:h-96 xl:w-[28rem] xl:h-[28rem] 2xl:w-[32rem] 2xl:h-[32rem]">
               <Progress
                 value={progress}
                 className="absolute inset-0 w-full h-full [&>div]:rounded-full"
               />
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
-                  <div className={`text-6xl md:text-8xl font-mono font-bold ${getTimerTextClass()} transition-colors duration-500`}>
+                  <div className={`text-6xl md:text-8xl xl:text-9xl font-mono font-bold ${getTimerTextClass()} transition-colors duration-500`}>
                     {formatTime(timeLeft)}
                   </div>
                   {!isComplete && (
@@ -512,7 +512,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   onPaste={handlePaste}
-                  className="flex-1 min-h-[200px] bg-background/50 border-border/50 resize-none"
+                  className="flex-1 min-h-[200px] xl:min-h-[300px] bg-background/50 border-border/50 resize-none"
                 />
 
                 {pastedImages.length > 0 && (

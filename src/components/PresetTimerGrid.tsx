@@ -76,7 +76,7 @@ export const PresetTimerGrid: React.FC<PresetTimerGridProps> = ({ onStartTimer }
         Preset Timers
       </h2>
       
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 xl:gap-4">
         {presetTimers.map((preset) => (
           <Card
             key={preset.id}
