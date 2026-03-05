@@ -21,9 +21,15 @@ jobs:
 
       - name: Install and Build for Node.js Project
         if: hashFiles('package.json') != ''
+        env:
+          PUBLIC_URL: /tools/meeting-timer
         run: |
           npm install
-          npm run build
+          if grep -q "vite" package.json; then
+            npm run build -- --base=/tools/meeting-timer/
+          else
+            npm run build
+          fi
 
       - name: Verify SSH Key Secret
         run: |
