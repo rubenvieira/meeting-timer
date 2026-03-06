@@ -356,11 +356,11 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
       </header>
 
       {/* Main Timer Display */}
-      <main className="relative z-10 container mx-auto px-4 md:px-6 pb-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 min-h-[calc(100vh-120px)]">
+      <main className="relative z-10 container max-w-6xl mx-auto px-4 md:px-6 pb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-[calc(100vh-120px)]">
 
           {/* Timer Section */}
-          <div className="flex flex-col items-center justify-center space-y-8">
+          <div className="lg:col-span-7 flex flex-col items-center justify-center space-y-8">
 
             {/* Mode Icon and Label */}
             <div className="text-center space-y-4">
@@ -431,13 +431,12 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
               <Button
                 size="lg"
                 onClick={isComplete ? handleStartNew : handlePlayPause}
-                className={`px-8 ${
-                  isComplete
+                className={`px-8 ${isComplete
                     ? 'bg-primary hover:bg-primary/90'
                     : isRunning
-                    ? 'bg-destructive hover:bg-destructive/90'
-                    : 'bg-primary hover:bg-primary/90'
-                } text-primary-foreground shadow-glow`}
+                      ? 'bg-destructive hover:bg-destructive/90'
+                      : 'bg-primary hover:bg-primary/90'
+                  } text-primary-foreground shadow-glow`}
               >
                 {isComplete ? (
                   <>
@@ -498,7 +497,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
           </div>
 
           {/* Notes Section */}
-          <div className="flex flex-col space-y-4">
+          <div className="lg:col-span-5 flex flex-col space-y-4">
             <Card className="bg-card/50 border-border/50 backdrop-blur-sm h-full">
               <CardContent className="p-6 h-full flex flex-col">
                 <div className="flex items-center space-x-2 mb-4">

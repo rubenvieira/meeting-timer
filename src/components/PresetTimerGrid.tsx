@@ -42,11 +42,11 @@ const presetTimers: PresetTimer[] = [
   { id: 'break-5', label: '5 min', minutes: 5, icon: Coffee, color: 'timer-orange', category: 'Break' },
   { id: 'break-10', label: '10 min', minutes: 10, icon: Coffee, color: 'timer-orange', category: 'Break' },
   { id: 'break-15', label: '15 min', minutes: 15, icon: Coffee, color: 'timer-orange', category: 'Break' },
-  
+
   // Lunch/Extended Breaks
   { id: 'lunch-30', label: '30 min', minutes: 30, icon: Clock, color: 'timer-success', category: 'Lunch' },
   { id: 'lunch-60', label: '60 min', minutes: 60, icon: Clock, color: 'timer-success', category: 'Lunch' },
-  
+
   // Sessions/Training
   { id: 'session-90', label: '90 min', minutes: 90, icon: Users, color: 'timer-purple', category: 'Session' },
   { id: 'session-120', label: '2 hours', minutes: 120, icon: Users, color: 'timer-purple', category: 'Session' },
@@ -75,8 +75,8 @@ export const PresetTimerGrid: React.FC<PresetTimerGridProps> = ({ onStartTimer }
         <Timer className="h-5 w-5 mr-2 text-primary" />
         Preset Timers
       </h2>
-      
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {presetTimers.map((preset) => (
           <Card
             key={preset.id}
@@ -87,7 +87,7 @@ export const PresetTimerGrid: React.FC<PresetTimerGridProps> = ({ onStartTimer }
               <div className={`p-3 rounded-full ${colorBgClasses[preset.color]} ${colorBgHoverClasses[preset.color]} transition-colors`}>
                 <preset.icon className={`h-6 w-6 ${colorTextClasses[preset.color]}`} />
               </div>
-              
+
               <div className="text-center">
                 <div className="text-sm font-medium text-foreground">{preset.label}</div>
                 <div className="text-xs text-muted-foreground">{preset.category}</div>
